@@ -112,13 +112,6 @@ function Navbar() {
 
         {/* Right side */}
         <div className="hidden md:flex items-center gap-3 lg:gap-4">
-          {/* Search */}
-          <div className="relative">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#818CF8]" fill="none" viewBox="0 0 32 32">
-              <path d={svgPaths.p24f28600} fill="#818CF8" />
-            </svg>
-            
-          </div>
           {/* Login */}
           <button className="bg-[#0849AC] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#0737a0] transition-colors whitespace-nowrap">
             Đăng nhập
