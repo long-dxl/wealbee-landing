@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Navbar } from "../components/Navbar";
 import svgPaths from "../../imports/svg-znrqqebbc3";
-import { saveSubscriber } from "../../lib/subscribe";
+import { saveSubscriber, SurveyData } from "../../lib/subscribe";
 
 const MAX_SYMBOLS = 10;
 
@@ -59,18 +59,176 @@ function IconCircleCheck() {
   );
 }
 
+const AGE_OPTIONS = [
+  {
+    value: "<20",
+    label: "Dưới 20 tuổi",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M4 21.6c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    value: "20-35",
+    label: "20 – 35 tuổi",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    value: ">35",
+    label: "Trên 35 tuổi",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+];
+
+const EXP_OPTIONS = [
+  {
+    value: "<1y",
+    label: "Dưới 1 năm",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M12 20V10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+        <path d="M18 20V4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+        <path d="M6 20v-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    value: "1-3y",
+    label: "1 – 3 năm",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M3 17l5-5 4 4 9-9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17 7h4v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    value: ">3y",
+    label: "Trên 3 năm",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/>
+        <path d="M12 7v5l3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8.5 3.5l1 2M15.5 3.5l-1 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+];
+
+const REF_OPTIONS = [
+  {
+    value: "Facebook",
+    label: "Facebook",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    value: "TikTok",
+    label: "TikTok",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    value: "LinkedIn",
+    label: "LinkedIn",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="4" cy="4" r="2" stroke="currentColor" strokeWidth="1.6"/>
+      </svg>
+    ),
+  },
+  {
+    value: "Được giới thiệu",
+    label: "Được giới thiệu",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    value: "Khác",
+    label: "Khác",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        <circle cx="19" cy="12" r="1" fill="currentColor"/>
+        <circle cx="5" cy="12" r="1" fill="currentColor"/>
+      </svg>
+    ),
+  },
+];
+
+function SurveyCard({
+  label,
+  icon,
+  selected,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center gap-2.5 py-4 px-3 rounded-2xl border-2 transition-all cursor-pointer select-none ${
+        selected
+          ? "border-[#0849ac] bg-[#eff6ff] text-[#0849ac]"
+          : "border-[#e5e7eb] bg-white text-[#6b7280] hover:border-[#bfdbfe] hover:bg-[#f8faff]"
+      }`}
+    >
+      <span className={selected ? "text-[#0849ac]" : "text-[#9ca3af]"}>{icon}</span>
+      <span className={`text-[13px] font-semibold leading-tight text-center ${selected ? "text-[#0849ac]" : "text-[#374151]"}`}>
+        {label}
+      </span>
+    </button>
+  );
+}
+
 export default function OnboardingPage() {
   const [email, setEmail] = useState("");
   const [fileName, setFileName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [showPortfolio, setShowPortfolio] = useState(false);
+  const [showSurvey, setShowSurvey] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [fileObj, setFileObj] = useState<File | null>(null);
   const [parseLoading, setParseLoading] = useState(false);
   const [parseError, setParseError] = useState("");
+
+  // Survey state
+  const [ageGroup, setAgeGroup] = useState("");
+  const [expLevel, setExpLevel] = useState("");
+  const [referral, setReferral] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Edit state
@@ -298,6 +456,128 @@ export default function OnboardingPage() {
                 Quay lại trang chủ
               </button>
             </div>
+          ) : showSurvey ? (
+            /* ── SURVEY SCREEN ── */
+            <>
+              {/* Progress indicator */}
+              <div className="flex items-center justify-center gap-2 mb-8">
+                <div className="w-2 h-2 rounded-full bg-[#bfdbfe]" />
+                <div className="w-8 h-1.5 rounded-full bg-[#0849ac]" />
+                <div className="w-2 h-2 rounded-full bg-[#bfdbfe]" />
+              </div>
+
+              <h1 className="text-[28px] font-bold text-[#111827] text-center mb-2">
+                Cho chúng tôi biết thêm về bạn
+              </h1>
+              <p className="text-[15px] text-[#6b7280] text-center mb-10">
+                Giúp chúng tôi cá nhân hoá trải nghiệm cho bạn
+              </p>
+
+              {/* Q1: Age */}
+              <div className="mb-8">
+                <p className="text-[13px] font-semibold text-[#6b7280] uppercase tracking-wider mb-3">
+                  Độ tuổi của bạn
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {AGE_OPTIONS.map((opt) => (
+                    <SurveyCard
+                      key={opt.value}
+                      label={opt.label}
+                      icon={opt.icon}
+                      selected={ageGroup === opt.value}
+                      onClick={() => setAgeGroup(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Q2: Experience */}
+              <div className="mb-8">
+                <p className="text-[13px] font-semibold text-[#6b7280] uppercase tracking-wider mb-3">
+                  Kinh nghiệm đầu tư
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {EXP_OPTIONS.map((opt) => (
+                    <SurveyCard
+                      key={opt.value}
+                      label={opt.label}
+                      icon={opt.icon}
+                      selected={expLevel === opt.value}
+                      onClick={() => setExpLevel(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Q3: Referral */}
+              <div className="mb-10">
+                <p className="text-[13px] font-semibold text-[#6b7280] uppercase tracking-wider mb-3">
+                  Bạn biết đến Wealbee qua đâu?
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {REF_OPTIONS.slice(0, 3).map((opt) => (
+                    <SurveyCard
+                      key={opt.value}
+                      label={opt.label}
+                      icon={opt.icon}
+                      selected={referral === opt.value}
+                      onClick={() => setReferral(opt.value)}
+                    />
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  {REF_OPTIONS.slice(3).map((opt) => (
+                    <SurveyCard
+                      key={opt.value}
+                      label={opt.label}
+                      icon={opt.icon}
+                      selected={referral === opt.value}
+                      onClick={() => setReferral(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Error */}
+              {errorMsg && (
+                <p className="text-[13px] text-red-500 text-center mb-3">{errorMsg}</p>
+              )}
+
+              {/* Submit */}
+              <button
+                disabled={!ageGroup || !expLevel || !referral || loading}
+                onClick={async () => {
+                  setErrorMsg("");
+                  setLoading(true);
+                  const survey: SurveyData = { age: ageGroup, experience: expLevel, referral };
+                  const result = await saveSubscriber(email, holdings, survey);
+                  setLoading(false);
+                  if (result.success) {
+                    setSubmitted(true);
+                  } else {
+                    setErrorMsg(result.message);
+                  }
+                }}
+                className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="3"/>
+                    <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                  </svg>
+                ) : (
+                  <IconCircleCheck />
+                )}
+                {loading ? "Đang xử lý..." : "Gửi và bắt đầu"}
+              </button>
+
+              <button
+                onClick={() => setShowSurvey(false)}
+                className="w-full text-[13px] text-[#6b7280] hover:text-[#374151] transition-colors mt-4 underline underline-offset-2"
+              >
+                Quay lại
+              </button>
+            </>
           ) : (
             <>
               <h1 className="text-[32px] font-bold text-[#111827] text-center mb-3">
@@ -470,31 +750,14 @@ export default function OnboardingPage() {
                     <p className="text-[13px] text-red-500 text-center mb-3">{errorMsg}</p>
                   )}
 
-                  {/* Submit */}
+                  {/* Next → Survey */}
                   <button
-                    disabled={!email || holdings.length === 0 || loading}
-                    onClick={async () => {
-                      setErrorMsg("");
-                      setLoading(true);
-                      const result = await saveSubscriber(email, holdings);
-                      setLoading(false);
-                      if (result.success) {
-                        setSubmitted(true);
-                      } else {
-                        setErrorMsg(result.message);
-                      }
-                    }}
+                    disabled={!email || holdings.length === 0}
+                    onClick={() => { setErrorMsg(""); setShowSurvey(true); }}
                     className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    {loading ? (
-                      <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="3"/>
-                        <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-                      </svg>
-                    ) : (
-                      <IconCircleCheck />
-                    )}
-                    {loading ? "Đang xử lý..." : "Gửi và bắt đầu"}
+                    <IconCircleCheck />
+                    Tiếp theo
                   </button>
                 </>
               ) : (
