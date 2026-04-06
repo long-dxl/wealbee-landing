@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { Navbar } from "../components/Navbar";
+import { saveFeedback } from "../../lib/subscribe";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type FeedbackType = "bug" | "feature" | "ui" | "general" | "other";
@@ -9,7 +10,7 @@ type StarValue = 1 | 2 | 3 | 4 | 5;
 interface FeedbackCategory {
   id: FeedbackType;
   label: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   color: string;
   bg: string;
   border: string;
@@ -64,7 +65,7 @@ function IconOther() {
   );
 }
 
-function IconStar({ filled, half }: { filled: boolean; half?: boolean }) {
+function IconStar({ filled }: { filled: boolean; half?: boolean }) {
   return (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
       {filled ? (
@@ -119,6 +120,8 @@ export default function FeedbackPage() {
   const [subject, setSubject]   = useState("");
   const [message, setMessage]   = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [errors, setErrors]     = useState<Record<string, string>>({});
 
   const activeRating = hoverRating ?? rating;
@@ -134,18 +137,20 @@ export default function FeedbackPage() {
     return e;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     setErrors({});
+    setSubmitError("");
+    setSubmitting(true);
 
-    const cat = CATEGORIES.find((c) => c.id === type);
-    const ratingText = rating ? `⭐ Đánh giá: ${rating}/5 — ${STAR_LABELS[rating]}` : "";
-    const body = encodeURIComponent(
-      `Họ tên: ${name}\nEmail: ${email}\nLoại phản hồi: ${cat?.label ?? ""}\n${ratingText}\n\n---\n${message}`
-    );
-    const mailSubject = encodeURIComponent(`[Wealbee Feedback] ${subject}`);
-    window.open(`mailto:${MAIL_TO}?subject=${mailSubject}&body=${body}`, "_blank");
+    const result = await saveFeedback({ type: type!, rating, name, email, subject, message });
+    setSubmitting(false);
+
+    if (!result.success) {
+      setSubmitError(result.message);
+      return;
+    }
     setSubmitted(true);
   };
 
@@ -415,13 +420,31 @@ export default function FeedbackPage() {
             </p>
           </div>
 
+          {/* ── Submit error ── */}
+          {submitError && (
+            <p className="text-[13px] text-[#dc2626] text-center mb-3">{submitError}</p>
+          )}
+
           {/* ── Submit ── */}
           <button
             onClick={handleSubmit}
-            className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 active:scale-[0.99] transition-all shadow-[0px_4px_20px_rgba(8,73,172,0.25)]"
+            disabled={submitting}
+            className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 active:scale-[0.99] transition-all shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <IconSend />
-            Gửi phản hồi
+            {submitting ? (
+              <>
+                <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="3"/>
+                  <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                </svg>
+                Đang gửi...
+              </>
+            ) : (
+              <>
+                <IconSend />
+                Gửi phản hồi
+              </>
+            )}
           </button>
 
           {/* ── Contact directly ── */}

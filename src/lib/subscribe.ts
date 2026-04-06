@@ -18,10 +18,18 @@ export interface SurveyData {
   referral: string;
 }
 
+export interface FeedbackData {
+  type: string;
+  rating: number | null;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export async function saveSubscriber(
   email: string,
-  holdings: Holding[],
-  _survey?: SurveyData
+  holdings: Holding[]
 ): Promise<SubscribeResult> {
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -50,6 +58,41 @@ export async function saveSubscriber(
   }
 
   return { success: true, message: "Đăng ký thành công!" };
+}
+
+export async function saveSurveyResponse(
+  email: string,
+  survey: SurveyData
+): Promise<void> {
+  await supabase.from("survey_responses").insert([{
+    email: email.trim().toLowerCase(),
+    age_group: survey.age,
+    experience: survey.experience,
+    referral: survey.referral,
+  }]);
+  // Fire-and-forget: don't block onboarding if this fails
+}
+
+export async function saveFeedback(
+  data: FeedbackData
+): Promise<SubscribeResult> {
+  const { error } = await supabase.from("feedback").insert([{
+    type: data.type,
+    rating: data.rating,
+    name: data.name.trim(),
+    email: data.email.trim().toLowerCase(),
+    subject: data.subject.trim(),
+    message: data.message.trim(),
+  }]);
+
+  if (error) {
+    if (error.message?.includes("Failed to fetch") || error.message?.includes("NetworkError")) {
+      return { success: false, message: "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại." };
+    }
+    return { success: false, message: "Có lỗi xảy ra. Vui lòng thử lại." };
+  }
+
+  return { success: true, message: "Gửi phản hồi thành công!" };
 }
 
 export async function joinProWaitlist(

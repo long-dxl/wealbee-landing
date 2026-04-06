@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Navbar } from "../components/Navbar";
 import svgPaths from "../../imports/svg-znrqqebbc3";
-import { saveSubscriber, SurveyData } from "../../lib/subscribe";
+import { saveSubscriber, saveSurveyResponse, SurveyData } from "../../lib/subscribe";
 
 const MAX_SYMBOLS = 10;
 
@@ -550,13 +550,14 @@ export default function OnboardingPage() {
                   setErrorMsg("");
                   setLoading(true);
                   const survey: SurveyData = { age: ageGroup, experience: expLevel, referral };
-                  const result = await saveSubscriber(email, holdings, survey);
-                  setLoading(false);
+                  const result = await saveSubscriber(email, holdings);
                   if (result.success) {
+                    saveSurveyResponse(email, survey); // fire-and-forget
                     setSubmitted(true);
                   } else {
                     setErrorMsg(result.message);
                   }
+                  setLoading(false);
                 }}
                 className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
