@@ -1182,7 +1182,7 @@ function Footer() {
 ───────────────────────────────────────────── */
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-[rgba(245,251,255,0.3)] to-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-white via-[rgba(245,251,255,0.3)] to-white relative">
       {/* Background blurs */}
       <div className="absolute top-[-120px] right-[-192px] w-[400px] sm:w-[500px] h-[400px] sm:h-[500px] bg-[rgba(232,240,255,0.5)] blur-[50px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-120px] left-[-192px] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-[rgba(132,166,252,0.1)] blur-[40px] rounded-full pointer-events-none" />

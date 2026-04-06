@@ -138,7 +138,7 @@ export default function OnboardingPage() {
   const canAdd = holdings.length < MAX_SYMBOLS;
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden font-['Montserrat',sans-serif]">
+    <div className="min-h-screen bg-white relative font-['Montserrat',sans-serif]">
       {/* Background blurs */}
       <div className="absolute top-[-120px] right-[-192px] w-[500px] h-[500px] bg-[rgba(232,240,255,0.5)] blur-[50px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-120px] left-[-192px] w-[400px] h-[400px] bg-[rgba(132,166,252,0.1)] blur-[40px] rounded-full pointer-events-none" />

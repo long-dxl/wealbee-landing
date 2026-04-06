@@ -158,7 +158,7 @@ export default function FeedbackPage() {
   if (submitted) {
     const cat = CATEGORIES.find((c) => c.id === type);
     return (
-      <div className="min-h-screen bg-white relative overflow-hidden font-['Montserrat',sans-serif]">
+      <div className="min-h-screen bg-white relative font-['Montserrat',sans-serif]">
         <BgBlurs />
         <Navbar />
         <main className="relative z-10 flex flex-col items-center justify-center px-6 py-20 min-h-[calc(100vh-76px)]">
