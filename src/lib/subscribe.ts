@@ -30,8 +30,16 @@ export async function saveSubscriber(
     if (error.code === "23505") {
       return { success: false, message: "Email này đã được đăng ký trước đó." };
     }
-    // DEBUG: hiện lỗi thật để tìm nguyên nhân
-    return { success: false, message: `[${error.code}] ${error.message}` };
+    if (error.code === "42501") {
+      return { success: false, message: "Không có quyền thực hiện thao tác này. Vui lòng liên hệ hỗ trợ." };
+    }
+    if (error.code === "23514") {
+      return { success: false, message: "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin." };
+    }
+    if (error.message?.includes("Failed to fetch") || error.message?.includes("NetworkError")) {
+      return { success: false, message: "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại." };
+    }
+    return { success: false, message: "Có lỗi xảy ra. Vui lòng thử lại sau." };
   }
 
   return { success: true, message: "Đăng ký thành công!" };
