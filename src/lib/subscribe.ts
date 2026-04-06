@@ -77,18 +77,21 @@ export async function unsubscribeEmail(
     return { success: false, message: "Email không hợp lệ." };
   }
 
-  const { error, count } = await supabase
-    .from("subscribers")
-    .delete({ count: "exact" })
-    .eq("email", normalizedEmail);
+  try {
+    const res = await fetch("/api/unsubscribe", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: normalizedEmail }),
+    });
 
-  if (error) {
-    return { success: false, message: "Có lỗi xảy ra. Vui lòng thử lại." };
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { success: false, message: data.error ?? "Có lỗi xảy ra. Vui lòng thử lại." };
+    }
+
+    return { success: true, message: "Hủy đăng ký thành công." };
+  } catch {
+    return { success: false, message: "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại." };
   }
-
-  if (count === 0) {
-    return { success: false, message: "Email này chưa đăng ký dịch vụ của Wealbee." };
-  }
-
-  return { success: true, message: "Hủy đăng ký thành công." };
 }
