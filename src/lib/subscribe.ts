@@ -30,7 +30,8 @@ export async function saveSubscriber(
     if (error.code === "23505") {
       return { success: false, message: "Email này đã được đăng ký trước đó." };
     }
-    return { success: false, message: "Có lỗi xảy ra. Vui lòng thử lại." };
+    // DEBUG: hiện lỗi thật để tìm nguyên nhân
+    return { success: false, message: `[${error.code}] ${error.message}` };
   }
 
   return { success: true, message: "Đăng ký thành công!" };
