@@ -21,7 +21,7 @@ export interface SurveyData {
 export async function saveSubscriber(
   email: string,
   holdings: Holding[],
-  survey?: SurveyData
+  _survey?: SurveyData
 ): Promise<SubscribeResult> {
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -29,13 +29,9 @@ export async function saveSubscriber(
     return { success: false, message: "Email không hợp lệ." };
   }
 
-  const source = survey
-    ? `onboarding|age:${survey.age}|exp:${survey.experience}|ref:${survey.referral}`
-    : "onboarding";
-
   const { error } = await supabase
     .from("subscribers")
-    .insert([{ email: normalizedEmail, holdings, source }]);
+    .insert([{ email: normalizedEmail, holdings, source: "onboarding" }]);
 
   if (error) {
     if (error.code === "23505") {
