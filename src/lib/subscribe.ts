@@ -77,28 +77,17 @@ export async function unsubscribeEmail(
     return { success: false, message: "Email không hợp lệ." };
   }
 
-  // Check tồn tại trước
-  const { data, error: selectError } = await supabase
+  const { error, count } = await supabase
     .from("subscribers")
-    .select("id")
-    .eq("email", normalizedEmail)
-    .maybeSingle();
-
-  if (selectError) {
-    return { success: false, message: "Có lỗi xảy ra. Vui lòng thử lại." };
-  }
-
-  if (!data) {
-    return { success: false, message: "Email này chưa đăng ký dịch vụ của Wealbee." };
-  }
-
-  const { error: deleteError } = await supabase
-    .from("subscribers")
-    .delete()
+    .delete({ count: "exact" })
     .eq("email", normalizedEmail);
 
-  if (deleteError) {
+  if (error) {
     return { success: false, message: "Có lỗi xảy ra. Vui lòng thử lại." };
+  }
+
+  if (count === 0) {
+    return { success: false, message: "Email này chưa đăng ký dịch vụ của Wealbee." };
   }
 
   return { success: true, message: "Hủy đăng ký thành công." };
