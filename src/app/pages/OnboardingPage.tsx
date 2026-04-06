@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Navbar } from "../components/Navbar";
 import svgPaths from "../../imports/svg-znrqqebbc3";
+import { saveSubscriber } from "../../lib/subscribe";
 
 const MAX_SYMBOLS = 10;
 
@@ -65,6 +66,8 @@ export default function OnboardingPage() {
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Edit state
@@ -399,14 +402,36 @@ export default function OnboardingPage() {
                     Dùng file khác
                   </button>
 
+                  {/* Error message */}
+                  {errorMsg && (
+                    <p className="text-[13px] text-red-500 text-center mb-3">{errorMsg}</p>
+                  )}
+
                   {/* Submit */}
                   <button
-                    disabled={!email || holdings.length === 0}
-                    onClick={() => setSubmitted(true)}
+                    disabled={!email || holdings.length === 0 || loading}
+                    onClick={async () => {
+                      setErrorMsg("");
+                      setLoading(true);
+                      const result = await saveSubscriber(email, holdings);
+                      setLoading(false);
+                      if (result.success) {
+                        setSubmitted(true);
+                      } else {
+                        setErrorMsg(result.message);
+                      }
+                    }}
                     className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    <IconCircleCheck />
-                    Gửi và bắt đầu
+                    {loading ? (
+                      <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="3"/>
+                        <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                      </svg>
+                    ) : (
+                      <IconCircleCheck />
+                    )}
+                    {loading ? "Đang xử lý..." : "Gửi và bắt đầu"}
                   </button>
                 </>
               ) : (
