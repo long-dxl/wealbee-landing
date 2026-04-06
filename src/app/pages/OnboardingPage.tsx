@@ -555,6 +555,11 @@ export default function OnboardingPage() {
                     <p className="text-[13px] text-red-500 text-center mb-3">{parseError}</p>
                   )}
 
+                  {/* Hint khi chưa điền email */}
+                  {fileObj && !email && (
+                    <p className="text-[12px] text-[#f59e0b] text-center mb-2">Vui lòng điền email ở trên trước.</p>
+                  )}
+
                   {/* Parse with AI button */}
                   <button
                     disabled={!email || !fileObj || parseLoading}
