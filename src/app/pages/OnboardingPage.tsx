@@ -68,6 +68,9 @@ export default function OnboardingPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [fileObj, setFileObj] = useState<File | null>(null);
+  const [parseLoading, setParseLoading] = useState(false);
+  const [parseError, setParseError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Edit state
@@ -83,7 +86,9 @@ export default function OnboardingPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFileName(e.target.files[0].name);
+      setFileObj(e.target.files[0]);
       setShowPortfolio(false);
+      setParseError("");
     }
   };
 
@@ -92,7 +97,50 @@ export default function OnboardingPage() {
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setFileName(e.dataTransfer.files[0].name);
+      setFileObj(e.dataTransfer.files[0]);
       setShowPortfolio(false);
+      setParseError("");
+    }
+  };
+
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string).split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const handleParseFile = async () => {
+    if (!fileObj) return;
+    if (fileObj.size > 1024 * 1024) {
+      setParseError("File quá lớn. Vui lòng chọn file nhỏ hơn 1MB.");
+      return;
+    }
+    setParseLoading(true);
+    setParseError("");
+    try {
+      const fileBase64 = await fileToBase64(fileObj);
+      const res = await fetch("/api/parse-portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileBase64, mimeType: fileObj.type }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setParseError(data.error ?? "Không thể đọc file. Vui lòng thử lại.");
+        return;
+      }
+      if (data.holdings && data.holdings.length > 0) {
+        setHoldings(data.holdings);
+        setShowPortfolio(true);
+      } else {
+        setParseError("AI không tìm thấy danh mục trong file. Vui lòng nhập tay.");
+      }
+    } catch {
+      setParseError("Lỗi kết nối. Vui lòng thử lại.");
+    } finally {
+      setParseLoading(false);
     }
   };
 
@@ -502,13 +550,37 @@ export default function OnboardingPage() {
                     </button>
                   </div>
 
-                  {/* Submit */}
+                  {/* Parse error */}
+                  {parseError && (
+                    <p className="text-[13px] text-red-500 text-center mb-3">{parseError}</p>
+                  )}
+
+                  {/* Parse with AI button */}
                   <button
-                    disabled={!email || !fileName}
-                    className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed"
+                    disabled={!email || !fileObj || parseLoading}
+                    onClick={handleParseFile}
+                    className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    Gửi và bắt đầu
+                    {parseLoading ? (
+                      <>
+                        <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="3"/>
+                          <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                        </svg>
+                        AI đang đọc file...
+                      </>
+                    ) : (
+                      <>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2L13.09 8.26L19 6L15.45 11.09L22 12L15.45 12.91L19 18L13.09 15.74L12 22L10.91 15.74L5 18L8.55 12.91L2 12L8.55 11.09L5 6L10.91 8.26L12 2Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                        </svg>
+                        Phân tích với AI
+                      </>
+                    )}
                   </button>
+                  <p className="text-[11px] text-[#9ca3af] text-center mt-2">
+                    Powered by Gemini · Bạn có thể chỉnh sửa kết quả trước khi gửi
+                  </p>
                 </>
               )}
             </>
