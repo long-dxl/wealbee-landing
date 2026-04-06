@@ -64,35 +64,47 @@ export async function saveSurveyResponse(
   email: string,
   survey: SurveyData
 ): Promise<void> {
-  await supabase.from("survey_responses").insert([{
-    email: email.trim().toLowerCase(),
-    age_group: survey.age,
-    experience: survey.experience,
-    referral: survey.referral,
-  }]);
-  // Fire-and-forget: don't block onboarding if this fails
+  try {
+    await fetch("/api/save-survey", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        age_group: survey.age,
+        experience: survey.experience,
+        referral: survey.referral,
+      }),
+    });
+  } catch {
+    // Fire-and-forget: don't block onboarding if this fails
+  }
 }
 
 export async function saveFeedback(
   data: FeedbackData
 ): Promise<SubscribeResult> {
-  const { error } = await supabase.from("feedback").insert([{
-    type: data.type,
-    rating: data.rating,
-    name: data.name.trim(),
-    email: data.email.trim().toLowerCase(),
-    subject: data.subject.trim(),
-    message: data.message.trim(),
-  }]);
+  try {
+    const res = await fetch("/api/save-feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: data.type,
+        rating: data.rating,
+        name: data.name,
+        email: data.email,
+        subject: data.subject,
+        message: data.message,
+      }),
+    });
 
-  if (error) {
-    if (error.message?.includes("Failed to fetch") || error.message?.includes("NetworkError")) {
-      return { success: false, message: "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại." };
+    const json = await res.json();
+    if (!res.ok) {
+      return { success: false, message: json.error ?? "Có lỗi xảy ra. Vui lòng thử lại." };
     }
-    return { success: false, message: "Có lỗi xảy ra. Vui lòng thử lại." };
+    return { success: true, message: "Gửi phản hồi thành công!" };
+  } catch {
+    return { success: false, message: "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại." };
   }
-
-  return { success: true, message: "Gửi phản hồi thành công!" };
 }
 
 export async function joinProWaitlist(
