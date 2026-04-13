@@ -71,6 +71,12 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-6">
           <span
             className="text-[16px] text-[#4b5563] cursor-pointer hover:text-[#111827] transition-colors"
+            onClick={() => handleNavigate("/blog")}
+          >
+            Blog
+          </span>
+          <span
+            className="text-[16px] text-[#4b5563] cursor-pointer hover:text-[#111827] transition-colors"
             onClick={() => handleNavigate("/feedback")}
           >
             Phản hồi
@@ -140,6 +146,12 @@ export function Navbar() {
       {mobileOpen && (
         <div className="md:hidden fixed top-[60px] inset-x-0 z-40 bg-white shadow-2xl border-t border-[#e8f2ff]">
           <div className="flex flex-col p-4 gap-1">
+            <button
+              onClick={() => handleNavigate("/blog")}
+              className="w-full text-left px-4 py-3.5 rounded-xl text-[16px] text-[#4b5563] hover:bg-[#f0f6ff] transition-colors"
+            >
+              Blog
+            </button>
             <button
               onClick={() => handleNavigate("/feedback")}
               className="w-full text-left px-4 py-3.5 rounded-xl text-[16px] text-[#4b5563] hover:bg-[#f0f6ff] transition-colors"

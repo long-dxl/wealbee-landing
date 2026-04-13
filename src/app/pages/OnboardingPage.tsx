@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import svgPaths from "../../imports/svg-znrqqebbc3";
 import { saveSubscriber, saveSurveyResponse, SurveyData } from "../../lib/subscribe";
 
@@ -354,7 +355,7 @@ export default function OnboardingPage() {
 
       <Navbar />
 
-      <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-16 pb-32">
+      <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-16 pb-16">
         <div className="w-full max-w-[500px]">
 
           {/* ── SUCCESS SCREEN ── */}
@@ -872,9 +873,7 @@ export default function OnboardingPage() {
         </div>
       </main>
 
-      <footer className="absolute bottom-0 left-0 right-0 py-6 text-center">
-        <span className="text-[14px] text-[#6b7280] font-['Montserrat',sans-serif]">© 2026</span>
-      </footer>
+      <Footer />
     </div>
   );
 }

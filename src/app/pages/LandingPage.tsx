@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router";
 import { useEffect, useRef, useCallback } from "react";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import svgPaths from "../../imports/svg-vhxiijub25";
 import featureSvg from "../../imports/Section/svg-d24cca693u";
 import aiSvg from "../../imports/Container/svg-0n0t81sdr8";
 import newAiSvg from "../../imports/Section-1/svg-6f1l47tsvh";
 import aiSectionSvg from "../../imports/Section-2/svg-46aj7qy4t9";
-import wealbeeFooterPaths from "../../imports/Link-1/svg-raizh0jyhh";
 import imgInvestingCom from "figma:asset/7945e59725703ef8bb910492da66c8766f79578d.png";
 import imgVietstockCafef from "figma:asset/c4d6b71deeb64e5bf802897e88e8542be3c4d384.png";
 import imgCafef from "figma:asset/37946a40da81879b78f096619ee988a7e70af500.png";
@@ -1121,62 +1121,6 @@ function CTASection() {
 /* ─────────────────────────────────────────────
    FOOTER
 ───────────────────────────────────────────── */
-function Footer() {
-  return (
-    <footer className="bg-white border-t border-[#e8f2ff] py-8 sm:py-12 px-5 sm:px-6">
-      <div className="max-w-[1216px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
-        <div className="flex items-center gap-3">
-          {/* Wealbee icon */}
-          <div className="relative size-[44px] flex-shrink-0">
-            <div className="absolute inset-[8.33%]">
-              <svg
-                className="absolute block size-full"
-                fill="none"
-                preserveAspectRatio="none"
-                viewBox="0 0 36.6667 36.6667"
-              >
-                <path d={wealbeeFooterPaths.p2a75dcf0} fill="#0849AC" />
-                <path d={wealbeeFooterPaths.p8351900} fill="#0849AC" />
-              </svg>
-            </div>
-            <div className="absolute inset-[27.08%_31.25%_27.08%_27.08%]">
-              <div className="absolute inset-[-2.48%_-2.73%]">
-                <svg
-                  className="block size-full"
-                  fill="none"
-                  preserveAspectRatio="none"
-                  viewBox="0 0 19.3333 21.1667"
-                >
-                  <path
-                    d={wealbeeFooterPaths.p2206f980}
-                    fill="#0849AC"
-                    stroke="#0849AC"
-                  />
-                  <path
-                    d={wealbeeFooterPaths.p1f348500}
-                    fill="#0849AC"
-                    stroke="#0849AC"
-                  />
-                  <path
-                    d={wealbeeFooterPaths.p14867f00}
-                    fill="#0849AC"
-                    stroke="#0849AC"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-          {/* Wealbee wordmark */}
-          <span className="text-[20px] font-bold text-[#0849ac]">Wealbee</span>
-        </div>
-        <span className="text-[13px] sm:text-[14px] text-[#6b7280]">
-          © 2026 Wealbee. All rights reserved.
-        </span>
-      </div>
-    </footer>
-  );
-}
-
 /* ─────────────────────────────────────────────
    PAGE ROOT
 ───────────────────────────────────────────── */
@@ -1185,7 +1129,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-b from-white via-[rgba(245,251,255,0.3)] to-white relative">
       {/* Background blurs */}
       <div className="absolute top-[-120px] right-[-192px] w-[400px] sm:w-[500px] h-[400px] sm:h-[500px] bg-[rgba(232,240,255,0.5)] blur-[50px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-120px] left-[-192px] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-[rgba(132,166,252,0.1)] blur-[40px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-[-192px] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-[rgba(132,166,252,0.1)] blur-[40px] rounded-full pointer-events-none" />
 
       <Navbar />
       <HeroSection />

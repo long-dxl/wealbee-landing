@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import svgPaths from "../../imports/svg-bgfixn5yhu";
 import { joinProWaitlist } from "../../lib/subscribe";
 
@@ -234,9 +235,7 @@ export default function PricingPage() {
         <p className="text-center text-[14px] text-[#6b7280] mt-12">Không mất phí để bắt đầu</p>
       </main>
 
-      <footer className="border-t border-[rgba(59,130,246,0.2)] py-6 text-center">
-        <span className="text-[14px] text-[#6b7280]">© 2026</span>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import { saveFeedback } from "../../lib/subscribe";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -457,9 +458,7 @@ export default function FeedbackPage() {
         </div>
       </main>
 
-      <footer className="relative z-10 py-6 text-center border-t border-[#f3f4f6]">
-        <span className="text-[14px] text-[#6b7280]">© 2026 Wealbee · Nền tảng phân tích tài chính AI</span>
-      </footer>
+      <Footer />
     </div>
   );
 }
