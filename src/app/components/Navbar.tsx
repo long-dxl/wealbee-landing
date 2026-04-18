@@ -70,13 +70,13 @@ export function Navbar() {
         {/* ── Desktop nav (md and above) ── */}
         <div className="hidden md:flex items-center gap-6">
           <span
-            className="text-[16px] text-[#4b5563] cursor-pointer hover:text-[#111827] transition-colors"
+            className="text-[16px] font-bold text-[#4b5563] cursor-pointer hover:text-[#111827] transition-colors"
             onClick={() => handleNavigate("/blog")}
           >
             Blog
           </span>
           <span
-            className="text-[16px] text-[#4b5563] cursor-pointer hover:text-[#111827] transition-colors"
+            className="text-[16px] font-bold text-[#4b5563] cursor-pointer hover:text-[#111827] transition-colors"
             onClick={() => handleNavigate("/feedback")}
           >
             Phản hồi
@@ -148,13 +148,13 @@ export function Navbar() {
           <div className="flex flex-col p-4 gap-1">
             <button
               onClick={() => handleNavigate("/blog")}
-              className="w-full text-left px-4 py-3.5 rounded-xl text-[16px] text-[#4b5563] hover:bg-[#f0f6ff] transition-colors"
+              className="w-full text-left px-4 py-3.5 rounded-xl text-[16px] font-bold text-[#4b5563] hover:bg-[#f0f6ff] transition-colors"
             >
               Blog
             </button>
             <button
               onClick={() => handleNavigate("/feedback")}
-              className="w-full text-left px-4 py-3.5 rounded-xl text-[16px] text-[#4b5563] hover:bg-[#f0f6ff] transition-colors"
+              className="w-full text-left px-4 py-3.5 rounded-xl text-[16px] font-bold text-[#4b5563] hover:bg-[#f0f6ff] transition-colors"
             >
               Phản hồi
             </button>
