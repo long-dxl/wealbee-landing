@@ -1,8 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import svgPaths from "../../imports/svg-znrqqebbc3";
 import { saveSubscriber, saveSurveyResponse, SurveyData } from "../../lib/subscribe";
+import { getAllStocks, type Stock } from "../../lib/stocks";
+import { StockSymbolInput } from "../components/StockSymbolInput";
 
 const MAX_SYMBOLS = 10;
 
@@ -213,24 +215,18 @@ function SurveyCard({
 }
 
 export default function OnboardingPage() {
+  const [stocks, setStocks] = useState<Stock[]>([]);
   const [email, setEmail] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
   const [holdings, setHoldings] = useState<Holding[]>([]);
-  const [showPortfolio, setShowPortfolio] = useState(false);
   const [showSurvey, setShowSurvey] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [fileObj, setFileObj] = useState<File | null>(null);
-  const [parseLoading, setParseLoading] = useState(false);
-  const [parseError, setParseError] = useState("");
 
   // Survey state
   const [ageGroup, setAgeGroup] = useState("");
   const [expLevel, setExpLevel] = useState("");
   const [referral, setReferral] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Edit state
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -242,71 +238,10 @@ export default function OnboardingPage() {
   const [newSymbol, setNewSymbol] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFileName(e.target.files[0].name);
-      setFileObj(e.target.files[0]);
-      setShowPortfolio(false);
-      setParseError("");
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFileName(e.dataTransfer.files[0].name);
-      setFileObj(e.dataTransfer.files[0]);
-      setShowPortfolio(false);
-      setParseError("");
-    }
-  };
-
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve((reader.result as string).split(",")[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
-  const handleParseFile = async () => {
-    if (!fileObj) return;
-    if (fileObj.size > 1024 * 1024) {
-      setParseError("File quá lớn. Vui lòng chọn file nhỏ hơn 1MB.");
-      return;
-    }
-    setParseLoading(true);
-    setParseError("");
-    try {
-      const fileBase64 = await fileToBase64(fileObj);
-      const res = await fetch("/api/parse-portfolio", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileBase64, mimeType: fileObj.type }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setParseError(data.error ?? "Không thể đọc file. Vui lòng thử lại.");
-        return;
-      }
-      if (data.holdings && data.holdings.length > 0) {
-        setHoldings(data.holdings);
-        setShowPortfolio(true);
-      } else {
-        setParseError("AI không tìm thấy danh mục trong file. Vui lòng nhập tay.");
-      }
-    } catch {
-      setParseError("Lỗi kết nối. Vui lòng thử lại.");
-    } finally {
-      setParseLoading(false);
-    }
-  };
+  useEffect(() => { getAllStocks().then(setStocks); }, []);
 
   const handleUseSample = () => {
     setHoldings([...SAMPLE_PORTFOLIO]);
-    setFileName("danh_muc_mau.pdf");
-    setShowPortfolio(true);
     setEditingIndex(null);
     setShowAddForm(false);
   };
@@ -363,11 +298,8 @@ export default function OnboardingPage() {
             <div className="flex flex-col items-center text-center">
               {/* Animated checkmark circle */}
               <div className="relative mb-8">
-                {/* Outer glow ring */}
                 <div className="absolute inset-0 rounded-full bg-[rgba(37,99,235,0.12)] scale-[1.35] blur-[10px]" />
-                {/* Middle ring */}
                 <div className="absolute inset-0 rounded-full border-[2px] border-[rgba(37,99,235,0.2)] scale-[1.15]" />
-                {/* Icon container */}
                 <div className="relative w-[88px] h-[88px] rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #0849ac 0%, #2563eb 100%)" }}>
                   <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                     <path d="M8 21L16 29L32 13" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -375,19 +307,15 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* Heading */}
               <h1 className="text-[30px] font-bold text-[#111827] mb-3 leading-[1.2]">
                 Đăng ký thành công!
               </h1>
 
-              {/* Sub message */}
               <p className="text-[16px] text-[#4b5563] leading-[26px] max-w-[380px] mb-8">
                 Chúng tôi đã nhận được yêu cầu của bạn và sẽ bắt đầu gửi thông báo trong thời gian sớm nhất.
               </p>
 
-              {/* Info card */}
               <div className="w-full bg-[#f0f6ff] border border-[#bfdbfe] rounded-[16px] p-5 mb-8 text-left">
-                {/* Email row */}
                 <div className="flex items-start gap-3 mb-4 pb-4 border-b border-[#dbeafe]">
                   <div className="w-[36px] h-[36px] rounded-[10px] bg-white border border-[#dbeafe] flex items-center justify-center flex-shrink-0">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -400,7 +328,6 @@ export default function OnboardingPage() {
                     <p className="text-[14px] font-semibold text-[#111827]">{email}</p>
                   </div>
                 </div>
-                {/* Portfolio row */}
                 <div className="flex items-start gap-3 mb-4 pb-4 border-b border-[#dbeafe]">
                   <div className="w-[36px] h-[36px] rounded-[10px] bg-white border border-[#dbeafe] flex items-center justify-center flex-shrink-0">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -419,7 +346,6 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                 </div>
-                {/* Schedule row */}
                 <div className="flex items-start gap-3 mb-4 pb-4 border-b border-[#dbeafe]">
                   <div className="w-[36px] h-[36px] rounded-[10px] bg-white border border-[#dbeafe] flex items-center justify-center flex-shrink-0">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -432,7 +358,6 @@ export default function OnboardingPage() {
                     <p className="text-[14px] font-semibold text-[#111827]">8:00 sáng &amp; 18:00 chiều mỗi ngày</p>
                   </div>
                 </div>
-                {/* Start date row */}
                 <div className="flex items-start gap-3">
                   <div className="w-[36px] h-[36px] rounded-[10px] bg-white border border-[#dbeafe] flex items-center justify-center flex-shrink-0">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -449,9 +374,8 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* Back button */}
               <button
-                onClick={() => { setSubmitted(false); setEmail(""); setFileName(""); setHoldings([]); setShowPortfolio(false); }}
+                onClick={() => { setSubmitted(false); setEmail(""); setHoldings([]); }}
                 className="text-[14px] text-[#6b7280] hover:text-[#374151] transition-colors underline underline-offset-2"
               >
                 Quay lại trang chủ
@@ -460,7 +384,6 @@ export default function OnboardingPage() {
           ) : showSurvey ? (
             /* ── SURVEY SCREEN ── */
             <>
-              {/* Progress indicator */}
               <div className="flex items-center justify-center gap-2 mb-8">
                 <div className="w-2 h-2 rounded-full bg-[#bfdbfe]" />
                 <div className="w-8 h-1.5 rounded-full bg-[#0849ac]" />
@@ -539,12 +462,10 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* Error */}
               {errorMsg && (
                 <p className="text-[13px] text-red-500 text-center mb-3">{errorMsg}</p>
               )}
 
-              {/* Submit */}
               <button
                 disabled={!ageGroup || !expLevel || !referral || loading}
                 onClick={async () => {
@@ -553,7 +474,7 @@ export default function OnboardingPage() {
                   const survey: SurveyData = { age: ageGroup, experience: expLevel, referral };
                   const result = await saveSubscriber(email, holdings);
                   if (result.success) {
-                    saveSurveyResponse(email, survey); // fire-and-forget
+                    saveSurveyResponse(email, survey);
                     setSubmitted(true);
                   } else {
                     setErrorMsg(result.message);
@@ -581,12 +502,13 @@ export default function OnboardingPage() {
               </button>
             </>
           ) : (
+            /* ── MAIN SCREEN ── */
             <>
               <h1 className="text-[32px] font-bold text-[#111827] text-center mb-3">
                 Bắt đầu miễn phí
               </h1>
               <p className="text-[16px] text-[#4b5563] text-center mb-10 leading-[24px]">
-                Tải lên danh mục của bạn để bắt đầu nhận insights hàng ngày (huỷ bất cứ lúc nào)
+                Nhập danh mục của bạn để bắt đầu nhận insights hàng ngày (huỷ bất cứ lúc nào)
               </p>
 
               {/* Email */}
@@ -601,24 +523,40 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              {/* ── Portfolio review panel (after loading sample) ── */}
-              {showPortfolio ? (
-                <>
-                  {/* Selected label */}
-                  <p className="text-[13px] text-[#6b7280] mb-3">
-                    Đã tải:{" "}
-                    <span className="text-[#111827] font-medium">{fileName}</span>
+              {/* Portfolio panel */}
+              <div className="border border-[#e5e7eb] rounded-[16px] p-5 bg-white shadow-[0px_1px_4px_rgba(0,0,0,0.06)] mb-4">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[17px] font-bold text-[#111827]">
+                    Danh mục của bạn
                   </p>
+                  {holdings.length === 0 && (
+                    <button
+                      onClick={handleUseSample}
+                      className="flex items-center gap-1.5 text-[13px] font-semibold text-[#2563eb] border border-[#bfdbfe] rounded-lg px-3 py-1.5 hover:bg-[#eff6ff] transition-colors"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d={svgPaths.p158f80} stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                        <path d={svgPaths.p1b796400} stroke="#2563EB" strokeWidth="1.5" fill="none" />
+                      </svg>
+                      Dùng mẫu
+                    </button>
+                  )}
+                </div>
+                <p className="text-[13px] text-[#6b7280] mb-4">
+                  Thêm mã cổ phiếu và số lượng bạn đang nắm giữ.
+                </p>
 
-                  {/* Review card */}
-                  <div className="border border-[#e5e7eb] rounded-[16px] p-5 bg-white shadow-[0px_1px_4px_rgba(0,0,0,0.06)] mb-4">
-                    <p className="text-[17px] font-bold text-[#111827] mb-1">
-                      Kiểm tra danh mục của bạn
-                    </p>
-                    <p className="text-[13px] text-[#6b7280] mb-4">
-                      Xem lại và chỉnh sửa nếu cần.
-                    </p>
-
+                {holdings.length === 0 && !showAddForm ? (
+                  /* Empty state */
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" className="mb-3 text-[#d1d5db]">
+                      <rect x="6" y="8" width="28" height="24" rx="3" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M13 16h14M13 22h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    <p className="text-[14px] text-[#9ca3af]">Chưa có mã nào. Thêm mã đầu tiên bên dưới.</p>
+                  </div>
+                ) : (
+                  <>
                     {/* Table header */}
                     <div className="grid grid-cols-[1fr_100px_44px_44px] gap-x-2 pb-2 mb-1">
                       <span className="text-[12px] font-semibold text-[#374151]">Mã CP</span>
@@ -633,13 +571,13 @@ export default function OnboardingPage() {
                         <div key={i} className="grid grid-cols-[1fr_100px_44px_44px] gap-x-2 items-center py-2.5">
                           {editingIndex === i ? (
                             <>
-                              {/* Editing row */}
-                              <input
-                                autoFocus
+                              <StockSymbolInput
                                 value={editSymbol}
-                                onChange={(e) => setEditSymbol(e.target.value.toUpperCase())}
+                                onChange={setEditSymbol}
+                                onSelect={(s) => setEditSymbol(s.symbol)}
+                                stocks={stocks}
+                                autoFocus
                                 className="border border-[#2563eb] rounded-md px-2 py-1 text-[13px] font-semibold text-[#111827] focus:outline-none w-full"
-                                maxLength={10}
                                 onKeyDown={(e) => e.key === "Enter" && handleSaveEdit()}
                               />
                               <input
@@ -684,190 +622,78 @@ export default function OnboardingPage() {
                         </div>
                       ))}
                     </div>
+                  </>
+                )}
 
-                    {/* Add symbol form */}
-                    {showAddForm && canAdd && (
-                      <div className="grid grid-cols-[1fr_100px_44px_44px] gap-x-2 items-center pt-3 border-t border-[#f3f4f6] mt-1">
-                        <input
-                          autoFocus
-                          value={newSymbol}
-                          onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-                          placeholder="VD: VIC"
-                          maxLength={10}
-                          className="border border-[#2563eb] rounded-md px-2 py-1 text-[13px] font-semibold text-[#111827] focus:outline-none w-full placeholder-[#c0c5ce]"
-                          onKeyDown={(e) => e.key === "Enter" && handleAddSymbol()}
-                        />
-                        <input
-                          value={newQuantity}
-                          onChange={(e) => setNewQuantity(e.target.value)}
-                          type="number"
-                          min={1}
-                          placeholder="SL"
-                          className="border border-[#2563eb] rounded-md px-2 py-1 text-[13px] text-[#111827] focus:outline-none w-full placeholder-[#c0c5ce]"
-                          onKeyDown={(e) => e.key === "Enter" && handleAddSymbol()}
-                        />
-                        <button
-                          onClick={handleAddSymbol}
-                          className="flex items-center justify-center hover:opacity-70 transition-opacity"
-                        >
-                          <IconCheck />
-                        </button>
-                        <button
-                          onClick={() => { setShowAddForm(false); setNewSymbol(""); setNewQuantity(""); }}
-                          className="flex items-center justify-center hover:opacity-70 transition-opacity"
-                        >
-                          <IconX />
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Footer: add button + counter */}
-                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#f3f4f6]">
-                      <button
-                        onClick={() => { setShowAddForm(true); setEditingIndex(null); }}
-                        disabled={!canAdd || showAddForm}
-                        className="flex items-center gap-1.5 text-[13px] font-semibold text-[#2563eb] hover:opacity-70 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        <IconPlus />
-                        Thêm mã cổ phiếu
-                      </button>
-                      <span className="text-[13px] text-[#6b7280]">
-                        <span className="font-semibold text-[#111827]">{holdings.length}</span>
-                        {" / "}
-                        {MAX_SYMBOLS} mã
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Use another portfolio link */}
-                  <button
-                    onClick={() => { setShowPortfolio(false); setFileName(""); setHoldings([]); }}
-                    className="text-[13px] text-[#6b7280] underline underline-offset-2 hover:text-[#374151] transition-colors mb-6 block"
-                  >
-                    Dùng file khác
-                  </button>
-
-                  {/* Error message */}
-                  {errorMsg && (
-                    <p className="text-[13px] text-red-500 text-center mb-3">{errorMsg}</p>
-                  )}
-
-                  {/* Next → Survey */}
-                  <button
-                    disabled={!email || holdings.length === 0}
-                    onClick={() => { setErrorMsg(""); setShowSurvey(true); }}
-                    className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <IconCircleCheck />
-                    Tiếp theo
-                  </button>
-                </>
-              ) : (
-                <>
-                  {/* ── Upload area ── */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <label className="text-[14px] text-[#374151]">Tải tài liệu danh mục</label>
-                    <button className="text-[#9ca3af] hover:text-[#6b7280]">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d={svgPaths.p10a54480} fill="currentColor" fillRule="evenodd" clipRule="evenodd" />
-                        <path d={svgPaths.p24817d00} fill="currentColor" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div
-                    className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors mb-4 ${
-                      isDragging ? "border-[#2563eb] bg-[#eff6ff]" : "border-[#d1d5db] hover:border-[#93c5fd]"
-                    }`}
-                    onClick={() => fileInputRef.current?.click()}
-                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDrop={handleDrop}
-                  >
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".pdf,.png,.jpg,.jpeg"
-                      onChange={handleFileChange}
-                      className="hidden"
+                {/* Add symbol form */}
+                {showAddForm && canAdd && (
+                  <div className="grid grid-cols-[1fr_100px_44px_44px] gap-x-2 items-center pt-3 border-t border-[#f3f4f6] mt-1">
+                    <StockSymbolInput
+                      value={newSymbol}
+                      onChange={setNewSymbol}
+                      onSelect={(s) => setNewSymbol(s.symbol)}
+                      stocks={stocks}
+                      autoFocus
+                      placeholder="VD: VIC"
+                      className="border border-[#2563eb] rounded-md px-2 py-1 text-[13px] font-semibold text-[#111827] focus:outline-none w-full placeholder-[#c0c5ce]"
+                      onKeyDown={(e) => e.key === "Enter" && handleAddSymbol()}
                     />
-                    <div className="flex flex-col items-center gap-2">
-                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-[#9ca3af]">
-                        <path d={svgPaths.p27e55b60} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      {fileName ? (
-                        <p className="text-[14px] text-[#111827] font-semibold">{fileName}</p>
-                      ) : (
-                        <>
-                          <p className="text-[14px] text-[#2563eb] font-semibold">Nhấn để tải file</p>
-                          <p className="text-[12px] text-[#9ca3af]">PDF, PNG, JPG · Tối đa 1MB</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="flex items-center gap-4 my-4">
-                    <div className="flex-1 border-t border-dashed border-[#d1d5db]" />
-                    <span className="text-[14px] text-[#9ca3af]">hoặc</span>
-                    <div className="flex-1 border-t border-dashed border-[#d1d5db]" />
-                  </div>
-
-                  {/* Sample portfolio button */}
-                  <div className="flex items-center gap-2 mb-6">
+                    <input
+                      value={newQuantity}
+                      onChange={(e) => setNewQuantity(e.target.value)}
+                      type="number"
+                      min={1}
+                      placeholder="SL"
+                      className="border border-[#2563eb] rounded-md px-2 py-1 text-[13px] text-[#111827] focus:outline-none w-full placeholder-[#c0c5ce]"
+                      onKeyDown={(e) => e.key === "Enter" && handleAddSymbol()}
+                    />
                     <button
-                      onClick={handleUseSample}
-                      className="flex-1 border border-[#bfdbfe] rounded-xl py-3 px-4 flex items-center justify-center gap-2 text-[14px] text-[#2563eb] font-semibold hover:bg-[#eff6ff] transition-colors"
+                      onClick={handleAddSymbol}
+                      className="flex items-center justify-center hover:opacity-70 transition-opacity"
                     >
-                      <IconCircleCheck />
-                      Sử dụng danh mục mẫu
+                      <IconCheck />
                     </button>
-                    <button className="border border-[#d1d5db] rounded-xl p-3 hover:bg-[#f9fafb] transition-colors">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d={svgPaths.p158f80} stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                        <path d={svgPaths.p1b796400} stroke="#6B7280" strokeWidth="1.5" fill="none" />
-                      </svg>
+                    <button
+                      onClick={() => { setShowAddForm(false); setNewSymbol(""); setNewQuantity(""); }}
+                      className="flex items-center justify-center hover:opacity-70 transition-opacity"
+                    >
+                      <IconX />
                     </button>
                   </div>
+                )}
 
-                  {/* Parse error */}
-                  {parseError && (
-                    <p className="text-[13px] text-red-500 text-center mb-3">{parseError}</p>
-                  )}
-
-                  {/* Hint khi chưa điền email */}
-                  {fileObj && !email && (
-                    <p className="text-[12px] text-[#f59e0b] text-center mb-2">Vui lòng điền email ở trên trước.</p>
-                  )}
-
-                  {/* Parse with AI button */}
+                {/* Footer: add button + counter */}
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#f3f4f6]">
                   <button
-                    disabled={!email || !fileObj || parseLoading}
-                    onClick={handleParseFile}
-                    className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    onClick={() => { setShowAddForm(true); setEditingIndex(null); }}
+                    disabled={!canAdd || showAddForm}
+                    className="flex items-center gap-1.5 text-[13px] font-semibold text-[#2563eb] hover:opacity-70 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    {parseLoading ? (
-                      <>
-                        <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="3"/>
-                          <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-                        </svg>
-                        AI đang đọc file...
-                      </>
-                    ) : (
-                      <>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                          <path d="M12 2L13.09 8.26L19 6L15.45 11.09L22 12L15.45 12.91L19 18L13.09 15.74L12 22L10.91 15.74L5 18L8.55 12.91L2 12L8.55 11.09L5 6L10.91 8.26L12 2Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                        </svg>
-                        Phân tích với AI
-                      </>
-                    )}
+                    <IconPlus />
+                    Thêm mã cổ phiếu
                   </button>
-                  <p className="text-[11px] text-[#9ca3af] text-center mt-2">
-                    Powered by Gemini · Bạn có thể chỉnh sửa kết quả trước khi gửi
-                  </p>
-                </>
+                  <span className="text-[13px] text-[#6b7280]">
+                    <span className="font-semibold text-[#111827]">{holdings.length}</span>
+                    {" / "}
+                    {MAX_SYMBOLS} mã
+                  </span>
+                </div>
+              </div>
+
+              {/* Error message */}
+              {errorMsg && (
+                <p className="text-[13px] text-red-500 text-center mb-3">{errorMsg}</p>
               )}
+
+              {/* Next → Survey */}
+              <button
+                disabled={!email || holdings.length === 0}
+                onClick={() => { setErrorMsg(""); setShowSurvey(true); }}
+                className="w-full bg-gradient-to-r from-[#0849ac] to-[#2563eb] text-white py-4 rounded-xl text-[16px] font-semibold hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(8,73,172,0.25)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <IconCircleCheck />
+                Tiếp theo
+              </button>
             </>
           )}
         </div>
