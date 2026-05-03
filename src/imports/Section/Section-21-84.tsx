@@ -46,7 +46,7 @@ function HorizontalBorder() {
     <div className="absolute border-[#e8f2ff] border-solid border-t h-[45px] left-[32px] right-[32px] top-[267px]" data-name="HorizontalBorder">
       <Svg />
       <div className="-translate-y-1/2 absolute flex flex-col font-['Montserrat:Regular',sans-serif] font-normal h-[20px] justify-center leading-[0] left-[22px] text-[#0849ac] text-[14px] top-[34px] w-[296px]">
-        <p className="leading-[20px]">{`Được gửi lúc 8:00 sáng, 18:00 chiều `}</p>
+        <p className="leading-[20px]">{`Được gửi lúc 8:00 sáng hàng ngày`}</p>
       </div>
     </div>
   );
@@ -59,7 +59,7 @@ function BackgroundBorderShadow() {
       <div className="-translate-y-1/2 absolute flex flex-col font-['Montserrat:Bold',sans-serif] font-bold h-[37px] justify-center leading-[0] left-[33px] text-[#111827] text-[20px] top-[121.5px] w-[283px]">
         <p className="leading-[28px]">Cập nhật hàng ngày</p>
       </div>
-      <p className="absolute font-['Montserrat:Regular',sans-serif] font-normal h-[103px] leading-[26px] left-[33px] text-[#4b5563] text-[16px] top-[141px] w-[308px]">Nhận các bản tin cá nhân hóa gửi thẳng vào email của bạn lúc 8h sáng và 18h tối, gửi cảnh báo khi có sự kiện rủi ro lớn tác động đến danh mục</p>
+      <p className="absolute font-['Montserrat:Regular',sans-serif] font-normal h-[103px] leading-[26px] left-[33px] text-[#4b5563] text-[16px] top-[141px] w-[308px]">Nhận các bản tin cá nhân hóa gửi thẳng vào email của bạn lúc 8h sáng, gửi cảnh báo khi có sự kiện rủi ro lớn tác động đến danh mục</p>
       <HorizontalBorder />
     </div>
   );

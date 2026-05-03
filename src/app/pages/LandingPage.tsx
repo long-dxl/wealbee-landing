@@ -186,9 +186,9 @@ function FeaturesSection() {
       icon: imgRealTimeAlerts,
       title: "Cập nhật hàng ngày",
       description:
-        "Nhận các bản tin cá nhân hóa gửi thẳng vào email của bạn lúc 8h sáng và 18h tối, gửi cảnh báo khi có sự kiện rủi ro lớn tác động đến danh mục",
+        "Nhận các bản tin cá nhân hóa gửi thẳng vào email của bạn lúc 8h sáng, gửi cảnh báo khi có sự kiện rủi ro lớn tác động đến danh mục",
       footerSvgPath: featureSvg.p1ccd2d00,
-      footerText: "Được gửi lúc 8:00 sáng, 18:00 chiều",
+      footerText: "Được gửi lúc 8:00 sáng hàng ngày",
       footerColor: "#0849AC",
       hasPro: false,
     },

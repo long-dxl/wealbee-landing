@@ -346,7 +346,7 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 mb-4 pb-4 border-b border-[#dbeafe]">
+                <div className="flex items-start gap-3">
                   <div className="w-[36px] h-[36px] rounded-[10px] bg-white border border-[#dbeafe] flex items-center justify-center flex-shrink-0">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <circle cx="8" cy="8" r="5.5" stroke="#2563EB" strokeWidth="1.3"/>
@@ -355,21 +355,7 @@ export default function OnboardingPage() {
                   </div>
                   <div>
                     <p className="text-[12px] text-[#6b7280] mb-0.5">Lịch gửi báo cáo</p>
-                    <p className="text-[14px] font-semibold text-[#111827]">8:00 sáng &amp; 18:00 chiều mỗi ngày</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-[36px] h-[36px] rounded-[10px] bg-white border border-[#dbeafe] flex items-center justify-center flex-shrink-0">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#2563EB" strokeWidth="1.3"/>
-                      <path d="M5 1.5V4M11 1.5V4" stroke="#2563EB" strokeWidth="1.3" strokeLinecap="round"/>
-                      <path d="M2 6.5H14" stroke="#2563EB" strokeWidth="1.3"/>
-                      <path d="M5.5 9.5H7M9 9.5H10.5" stroke="#2563EB" strokeWidth="1.3" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-[12px] text-[#6b7280] mb-0.5">Bắt đầu gửi tin từ ngày</p>
-                    <p className="text-[14px] font-semibold text-[#0849ac]">2/5/2026</p>
+                    <p className="text-[14px] font-semibold text-[#111827]">8:00 sáng mỗi ngày</p>
                   </div>
                 </div>
               </div>
