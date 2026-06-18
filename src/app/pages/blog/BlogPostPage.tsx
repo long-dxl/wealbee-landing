@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link, useNavigate } from 'react-router'
 import DOMPurify from 'dompurify'
-import { Navbar } from '../../components/Navbar'
+import { Navbar } from '../../components/LegacyNavbar'
 import { Footer } from '../../components/Footer'
 import { blogSupabase as supabase } from '../../../lib/blogSupabase'
 import { ReadingProgress } from './components/ReadingProgress'

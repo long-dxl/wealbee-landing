@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router'
-import { Navbar } from '../../components/Navbar'
+import { Navbar } from '../../components/LegacyNavbar'
 import { Footer } from '../../components/Footer'
 
 import { blogSupabase as supabase } from '../../../lib/blogSupabase'
