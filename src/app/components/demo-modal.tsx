@@ -263,17 +263,44 @@ export function DemoModal({ open, onClose, theme }: { open: boolean; onClose: ()
 
   const [form, setForm] = useState<FormData>({ email: "", hoTen: "", dienThoai: "", congTy: "", loaiNhaDauTu: "", loinhan: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const set = (key: keyof FormData) => (v: string) => setForm((f) => ({ ...f, [key]: v }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (submitting) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/save-demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          ho_ten: form.hoTen,
+          dien_thoai: form.dienThoai,
+          cong_ty: form.congTy,
+          loai_nha_dau_tu: form.loaiNhaDauTu,
+          loi_nhan: form.loinhan,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Gửi không thành công, vui lòng thử lại.");
+      }
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Có lỗi xảy ra, vui lòng thử lại.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleClose = () => {
     onClose();
-    setTimeout(() => { setSubmitted(false); setForm({ email: "", hoTen: "", dienThoai: "", congTy: "", loaiNhaDauTu: "", loinhan: "" }); }, 350);
+    setTimeout(() => { setSubmitted(false); setError(null); setSubmitting(false); setForm({ email: "", hoTen: "", dienThoai: "", congTy: "", loaiNhaDauTu: "", loinhan: "" }); }, 350);
   };
 
   return (
@@ -356,11 +383,17 @@ export function DemoModal({ open, onClose, theme }: { open: boolean; onClose: ()
                   <div className="pt-2 pb-4">
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-white transition-all hover:-translate-y-0.5 hover:opacity-90"
+                      disabled={submitting}
+                      className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-white transition-all hover:-translate-y-0.5 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                       style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15, background: "var(--wb-primary)" }}
                     >
-                      Gửi yêu cầu <ArrowRight size={16} />
+                      {submitting ? "Đang gửi…" : <>Gửi yêu cầu <ArrowRight size={16} /></>}
                     </button>
+                    {error && (
+                      <p className="mt-3" style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, color: "#FF3B30" }}>
+                        {error}
+                      </p>
+                    )}
                     <p className="mt-4" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.35)" }}>
                       Thông tin của bạn được bảo mật tuyệt đối. Không spam.
                     </p>
