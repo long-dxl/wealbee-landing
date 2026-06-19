@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Plus, Minus, ShieldCheck } from "lucide-react";
+import { Check, Plus, Minus } from "lucide-react";
 import { Reveal, Eyebrow, Button } from "./primitives";
 
 /* ───────────────────────────── Pricing ───────────────────────────── */
@@ -31,6 +31,7 @@ const PLANS: Plan[] = [
       "Hỗ trợ cộng đồng",
     ],
     cta: "Bắt đầu miễn phí",
+    ctaAction: "demo",
     highlight: false,
   },
   {
@@ -201,9 +202,6 @@ export function Pricing({ onOpenDemo }: { onOpenDemo: () => void }) {
           <p style={{ fontFamily: "Montserrat, sans-serif", fontSize: 14, color: "var(--wb-muted)" }}>
             Cần white-label cho công ty chứng khoán?{" "}
             <button type="button" onClick={onOpenDemo} className="underline-offset-2 hover:underline" style={{ color: "var(--wb-bright)", background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer" }}>Liên hệ giải pháp B2B.</button>
-          </p>
-          <p className="mt-3 inline-flex items-center gap-2" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11.5, color: "var(--wb-faint)" }}>
-            <ShieldCheck size={13} /> Không cần thẻ · Huỷ bất cứ lúc nào · Dữ liệu luôn export được
           </p>
         </Reveal>
       </div>
