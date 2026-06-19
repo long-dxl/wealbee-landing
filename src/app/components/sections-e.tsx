@@ -21,7 +21,7 @@ export function FinalCTA({ onOpenDemo }: { onOpenDemo: () => void }) {
             Yêu cầu bản Demo <ArrowRight size={18} />
           </Button>
           <p className="relative mt-5" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, color: "rgba(255,255,255,0.8)" }}>
-            Tạo Agent đầu tiên trong 60 giây. Không cần thẻ tín dụng.
+            Bắt đầu miễn phí · Tạo Agent đầu tiên trong 5 phút.
           </p>
         </div>
       </Reveal>
