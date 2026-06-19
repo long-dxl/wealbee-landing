@@ -339,10 +339,10 @@ export function DemoModal({ open, onClose, theme }: { open: boolean; onClose: ()
             <div className="flex items-start justify-between px-8 pt-8 pb-6" style={{ borderBottom: `1px solid ${dividerColor}` }}>
               <div>
                 <h2 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 28, lineHeight: 1.1, color: isDark ? "#ffffff" : "#1a1a2e" }}>
-                  Đặt lịch demo.
+                  Thông tin liên hệ
                 </h2>
                 <p className="mt-1.5" style={{ fontFamily: "Montserrat, sans-serif", fontSize: 14, color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>
-                  Chúng tôi sẽ liên hệ trong 24 giờ.
+                  Chúng tôi sẽ gửi tài khoản demo sớm nhất.
                 </p>
               </div>
               <button
@@ -365,7 +365,6 @@ export function DemoModal({ open, onClose, theme }: { open: boolean; onClose: ()
                   <UnderlineInput label="Email" type="email" value={form.email} onChange={set("email")} required placeholder="ban@email.com" isDark={isDark} />
                   <UnderlineInput label="Họ và tên" value={form.hoTen} onChange={set("hoTen")} required placeholder="Nguyễn Văn A" isDark={isDark} />
                   <UnderlineInput label="Số điện thoại" type="tel" value={form.dienThoai} onChange={set("dienThoai")} placeholder="0912 345 678" isDark={isDark} />
-                  <UnderlineInput label="Công ty / Tổ chức" value={form.congTy} onChange={set("congTy")} placeholder="Tên công ty (nếu có)" isDark={isDark} />
                   <UnderlineSelect
                     label="Bạn là"
                     value={form.loaiNhaDauTu}
@@ -378,6 +377,9 @@ export function DemoModal({ open, onClose, theme }: { open: boolean; onClose: ()
                       { value: "khac", label: "Khác" },
                     ]}
                   />
+                  {form.loaiNhaDauTu === "cong-ty" && (
+                    <UnderlineInput label="Công ty / Tổ chức" value={form.congTy} onChange={set("congTy")} required placeholder="Tên công ty chứng khoán" isDark={isDark} />
+                  )}
                   <UnderlineTextarea label="Bạn muốn Wealbee giúp gì?" value={form.loinhan} onChange={set("loinhan")} required isDark={isDark} />
 
                   <div className="pt-2 pb-4">
