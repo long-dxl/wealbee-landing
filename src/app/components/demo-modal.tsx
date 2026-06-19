@@ -271,8 +271,21 @@ export function DemoModal({ open, onClose, theme }: { open: boolean; onClose: ()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
-    setSubmitting(true);
     setError(null);
+
+    // Validate email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError("Email không hợp lệ. Vui lòng kiểm tra lại.");
+      return;
+    }
+    // Validate số điện thoại Việt Nam (nếu có nhập)
+    const phone = form.dienThoai.replace(/[\s.\-()]/g, "");
+    if (phone && !/^(0\d{9}|\+84\d{9})$/.test(phone)) {
+      setError("Số điện thoại không hợp lệ (ví dụ: 0912 345 678).");
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const res = await fetch("/api/save-demo", {
         method: "POST",
@@ -377,8 +390,8 @@ export function DemoModal({ open, onClose, theme }: { open: boolean; onClose: ()
                       { value: "khac", label: "Khác" },
                     ]}
                   />
-                  {form.loaiNhaDauTu === "cong-ty" && (
-                    <UnderlineInput label="Công ty / Tổ chức" value={form.congTy} onChange={set("congTy")} required placeholder="Tên công ty chứng khoán" isDark={isDark} />
+                  {(form.loaiNhaDauTu === "cong-ty" || form.loaiNhaDauTu === "khac") && (
+                    <UnderlineInput label="Công ty / Tổ chức" value={form.congTy} onChange={set("congTy")} required placeholder="Tên công ty / tổ chức của bạn" isDark={isDark} />
                   )}
                   <UnderlineTextarea label="Bạn muốn Wealbee giúp gì?" value={form.loinhan} onChange={set("loinhan")} required isDark={isDark} />
 
