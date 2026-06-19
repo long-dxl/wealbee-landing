@@ -152,16 +152,6 @@ export function Hero({ onOpenDemo }: { onOpenDemo: () => void }) {
             <Play size={15} /> Xem Wealbee hoạt động
           </Button>
         </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.34 }}
-          className="mt-5"
-          style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5, color: "var(--wb-faint)" }}
-        >
-          Miễn phí 10 credits/ngày · Không cần thẻ tín dụng · Dữ liệu từ Vietstock, FiinGroup, CafeF
-        </motion.p>
       </div>
 
       {/* 3D product showcase */}
