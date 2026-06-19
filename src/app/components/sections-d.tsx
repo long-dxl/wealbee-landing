@@ -218,7 +218,7 @@ const QUOTES = [
     initials: "M",
   },
   {
-    text: "Mỗi sáng tôi mở Telegram là có bản tin gọn về watchlist, số liệu nào cũng có nguồn. Tiết kiệm cho tôi cả tiếng đồng hồ.",
+    text: "Mỗi sáng tôi mở email là có bản tin gọn về watchlist, số liệu nào cũng có nguồn. Tiết kiệm cho tôi cả tiếng đồng hồ.",
     name: "Chị Hà",
     role: "Nhà đầu tư cá nhân",
     initials: "H",
